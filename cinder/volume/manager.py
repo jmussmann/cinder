@@ -1150,7 +1150,7 @@ class VolumeManager(manager.CleanableManager,
         self.create_snapshot(context, snapshot)
         return snapshot
 
-    def revert_to_snapshot(self, context, volume, snapshot) -> None:
+    def revert_to_snapshot(self, context, volume, snapshot, original_volume_state) -> None:
         """Revert a volume to a snapshot.
 
         The process of reverting to snapshot consists of several steps:
@@ -1207,7 +1207,7 @@ class VolumeManager(manager.CleanableManager,
                 LOG.exception(msg, msg_args)
 
         v_res = volume.update_single_status_where(
-            'available', 'reverting')
+            original_volume_state, 'reverting')
         if not v_res:
             msg_args = {"id": volume.id,
                         "status": 'available'}

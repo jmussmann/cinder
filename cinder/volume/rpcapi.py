@@ -180,11 +180,11 @@ class VolumeAPI(rpc.RPCAPI):
                    volume=volume)
 
     @rpc.assert_min_rpc_version('3.15')
-    def revert_to_snapshot(self, ctxt, volume, snapshot):
+    def revert_to_snapshot(self, ctxt, volume, snapshot, volume_state):
         version = self._compat_ver('3.15')
         cctxt = self._get_cctxt(volume.service_topic_queue, version)
         cctxt.cast(ctxt, 'revert_to_snapshot', volume=volume,
-                   snapshot=snapshot)
+                   snapshot=snapshot, original_volume_state=volume_state)
 
     def delete_volume(self,
                       ctxt: context.RequestContext,

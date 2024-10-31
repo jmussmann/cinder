@@ -390,8 +390,9 @@ class API(base.Base):
         """revert a volume to a snapshot"""
         context.authorize(vol_action_policy.REVERT_POLICY,
                           target_obj=volume)
+        volume_state = volume.status
         v_res = volume.update_single_status_where(
-            'reverting', 'available')
+            'reverting', ['available', 'in-use'])
         if not v_res:
             msg = (_("Can't revert volume %(vol_id)s to its latest snapshot "
                      "%(snap_id)s. Volume's status must be 'available'.")
@@ -408,7 +409,7 @@ class API(base.Base):
                       "snap_id": snapshot.id})
             raise exception.InvalidSnapshot(reason=msg)
 
-        self.volume_rpcapi.revert_to_snapshot(context, volume, snapshot)
+        self.volume_rpcapi.revert_to_snapshot(context, volume, snapshot, volume_state)
 
     def delete(self,
                context: context.RequestContext,
